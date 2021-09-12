@@ -1,4 +1,0 @@
-#!/bin/bash
-./cpd-cli backup-restore init -n zen --log-level=debug --verbose --pvc-name cpdbr-pvc \
-             --image-prefix=image-registry.openshift-image-registry.svc:5000/zen \
-             --provider=local
