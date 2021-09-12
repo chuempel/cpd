@@ -1,2 +1,0 @@
-#!/bin/bash
-oc apply –f cpdbr-pvc.yaml
