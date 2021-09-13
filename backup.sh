@@ -29,12 +29,12 @@ choice=$1
 if [[ -z ${choice} ]]; then
     echo "What do you want to do?"
     echo "  1- setup cluster"
-    echo "  2- start init"
-    echo "  3- start backup"
-    echo "  4- start restore"
-    echo "  5- start quiesce"
-    echo "  6- start unquiesce"
-    echo "  7- start unquiesce w/ ignore hooks"
+    echo "  2- init"
+    echo "  3- backup"
+    echo "  4- restore"
+    echo "  5- quiesce"
+    echo "  6- unquiesce"
+    echo "  7- unquiesce force"
     echo "  9- uninstall"
     echo "  q to quit"
     read -p 'Choice number: ' choice
@@ -55,7 +55,7 @@ function setup_backup_restore () {
         mv cpd-cli-${ARCH}-EE-10.0.1*/* .
 #	oc patch configs.imageregistry.operator.openshift.io/cluster --patch '{"spec":{"defaultRoute":true}}' --type=merge
 #	sleep 30
-  IMAGE_REGISTRY=$(oc get route -n openshift-image-registry | grep image-registry | awk '{print $2}')
+        IMAGE_REGISTRY=$(oc get route -n openshift-image-registry | grep image-registry | awk '{print $2}')
 	echo ${IMAGE_REGISTRY}
 	CPU_ARCH=$(uname -m)
 	echo ${CPU_ARCH}
@@ -100,7 +100,7 @@ function init () {
 
 
 function backup () {
-  # we run the init function before, just to make sure.
+        # we run the init function before, just to make sure.
 	init
 	echo "Start backup"
 	./cpd-cli backup-restore volume-backup create -n ${INSTALL_NAMESPACE} --skip-quiesce=${SKIP_QUIESCE} ${INSTALL_NAMESPACE}-volbackup01 --log-level=${LOG_LEVEL} --verbose
@@ -131,7 +131,7 @@ function restore () {
 	./cpd-cli backup-restore volume-backup unlock ${INSTALL_NAMESPACE}-volbackup01 -n ${INSTALL_NAMESPACE} --log-level=${LOG_LEVEL} --verbose
 	echo "Restore from backup volume"
 	./cpd-cli backup-restore volume-restore create -n  ${INSTALL_NAMESPACE} --from-backup ${INSTALL_NAMESPACE}-volbackup01 --skip-quiesce=${SKIP_QUIESCE} ${INSTALL_NAMESPACE}-volrestore1 --log-level=${LOG_LEVEL} --verbose
-# if it fails remove the cpdbur job that use the pvc, then try again
+        # if it fails remove the cpdbur job that use the pvc, then try again
 	echo "check the volume restore job status for ${INSTALL_NAMESPACE} namespace"
 	./cpd-cli backup-restore volume-restore status -n ${INSTALL_NAMESPACE}  ${INSTALL_NAMESPACE}-volrestore1
 	echo "list volume restores for ${INSTALL_NAMESPACE} namespace"
